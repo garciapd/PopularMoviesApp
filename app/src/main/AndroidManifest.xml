@@ -26,6 +26,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MoviesMain"/>
         </activity>
+        <provider
+            android:name="com.danielgarciaperez.nanodegree.popularmoviesapp.data.MovieContentProvider"
+            android:authorities="com.danielgarciaperez.nanodegree.popularmoviesapp"
+            android:exported="false"/>
     </application>
-
 </manifest>
