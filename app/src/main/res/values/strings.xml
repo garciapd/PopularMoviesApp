@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Pop Movies</string>
     <string name="app_name_rated">Rated Movies</string>
+    <string name="app_name_favourite">Favourite Movies</string>
     <string name="movie_detail">Movie Detail</string>
     <string name="rated">Rated</string>
     <string name="popular">Popular</string>
+    <string name="favourite">Favourite</string>
 </resources>

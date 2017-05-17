@@ -21,6 +21,7 @@ android {
             it.resValue 'string', 'API_KEY', apiKey
         }
     }
+    dataBinding.enabled = true;
 }
 
 dependencies {

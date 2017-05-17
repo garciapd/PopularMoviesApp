@@ -19,8 +19,6 @@ public interface MoviesProvider {
 
     int getNumMovies();
 
-    void loadMovies(Order order) throws IOException;
-
-    void setAdapter(MoviesAdapter adapter);
+    void loadMovies(int position, Order order) throws IOException;
 
 }

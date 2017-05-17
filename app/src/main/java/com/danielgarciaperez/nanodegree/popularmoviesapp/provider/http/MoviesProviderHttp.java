@@ -1,9 +1,10 @@
 package com.danielgarciaperez.nanodegree.popularmoviesapp.provider.http;
 
-import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 
 import com.danielgarciaperez.nanodegree.popularmoviesapp.BuildConfig;
+import com.danielgarciaperez.nanodegree.popularmoviesapp.MovieLoaderListener;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.adapter.MoviesAdapter;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.model.Movie;
 
@@ -28,21 +29,24 @@ public class MoviesProviderHttp implements MoviesProvider, OnFetchListener{
     private final String API_KEY = BuildConfig.API_KEY;
     private final String URL = "http://api.themoviedb.org/3/movie";
 
-    private MoviesAdapter adapter;
-
     private Map<Integer, Boolean> fetching = new HashMap<>();
 
     private Map<Integer, PaginatedResult> paginatedResults = new HashMap<>();
 
     private Order order;
 
+    private MovieLoaderListener listener;
+
     private final int elementsPerPage = 20;
+
+
+    public MoviesProviderHttp(MovieLoaderListener listener){
+        this.listener = listener;
+    }
 
 
     @Override
     public Movie getMovieAtPosition(int position) {
-
-
         int pageNumber = 0;
         if(position >0 && elementsPerPage > 0){
             pageNumber = position / elementsPerPage;
@@ -56,7 +60,7 @@ public class MoviesProviderHttp implements MoviesProvider, OnFetchListener{
                 urls[0] = URL +getOrderPath(this.order)+"?api_key="+ API_KEY +"&page="+Integer.valueOf(pageNumber+1);
 
                 fetching.put(pageNumber, true);
-                new FetchMoviesTask(this).execute(urls);
+                new FetchMoviesTask(this, position).execute(urls);
             }
             return null;
         }
@@ -91,16 +95,10 @@ public class MoviesProviderHttp implements MoviesProvider, OnFetchListener{
     }
 
     @Override
-    public void loadMovies(Order order) throws IOException {
-
+    public void loadMovies(int position, Order order) throws IOException {
         this.order = order;
-        String[] urls = new String[1];
-        urls[0] = URL +getOrderPath(order)+"?api_key="+ API_KEY;
-
         clearCache();
-
-        new FetchMoviesTask(this).execute(urls);
-
+        getMovieAtPosition(position);
     }
 
     private void clearCache() {
@@ -109,19 +107,14 @@ public class MoviesProviderHttp implements MoviesProvider, OnFetchListener{
     }
 
     @Override
-    public void setAdapter(MoviesAdapter adapter) {
-        this.adapter = adapter;
-    }
-
-    @Override
-    public void onStringCompleted(String result) {
+    public void onStringCompleted(String result, int position) {
         if(result != null && result.length() > 0){
             Gson gson = new Gson();
             PaginatedResult results = gson.fromJson(result, PaginatedResult.class);
             this.paginatedResults.put(results.getPage().intValue()-1, results);
 
             this.fetching.put(results.getPage().intValue()-1, true);
-            this.adapter.notifyDataSetChanged();
+            listener.onMovieLoaded(position);
         }
     }
 
@@ -135,19 +128,22 @@ public class MoviesProviderHttp implements MoviesProvider, OnFetchListener{
 
 }
 
- interface OnFetchListener {
+interface OnFetchListener {
 
-     void onStringCompleted(String s);
+    void onStringCompleted(String s, int position);
 
-     void onStringError(String s);
+    void onStringError(String s);
 }
 
- class FetchMoviesTask extends AsyncTask<String, Void, String> {
+
+class FetchMoviesTask extends AsyncTask<String, Void, String> {
 
      private final OnFetchListener listener;
+     private int position= 0;
 
-     FetchMoviesTask(OnFetchListener listener){
+     FetchMoviesTask(OnFetchListener listener, int position){
          this.listener = listener;
+         this.position = position;
      }
 
      @Override
@@ -165,7 +161,7 @@ public class MoviesProviderHttp implements MoviesProvider, OnFetchListener{
 
      @Override
      protected void onPostExecute(String result) {
-         listener.onStringCompleted(result);
+         listener.onStringCompleted(result, position);
      }
 
      private String run(String url) throws IOException {

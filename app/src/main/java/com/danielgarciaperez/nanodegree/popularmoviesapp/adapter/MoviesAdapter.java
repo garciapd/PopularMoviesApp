@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.danielgarciaperez.nanodegree.popularmoviesapp.R;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.model.Movie;
@@ -42,6 +43,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     public void onBindViewHolder(final MoviesAdapterViewHolder holder, int position) {
         int pos = position * 2;
 
+        holder.layout.setTag(position);
         Movie movie1 = provider.getMovieAtPosition(pos);
         if(movie1 != null){
             holder.imageView1.setTag(pos);
@@ -65,13 +67,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
 
         public final ImageView imageView1;
         public final ImageView imageView2;
+        public final LinearLayout layout;
 
         public MoviesAdapterViewHolder(View view) {
             super(view);
             imageView1 = (ImageView) view.findViewById(R.id.imageView1);
             imageView2 = (ImageView) view.findViewById(R.id.imageView2);
+            layout = (LinearLayout) view.findViewById(R.id.linearLayout);
         }
 
     }
-
 }

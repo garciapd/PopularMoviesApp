@@ -13,6 +13,7 @@ import com.danielgarciaperez.nanodegree.popularmoviesapp.adapter.MoviesAdapter;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.model.Movie;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.provider.MoviesProvider;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.provider.http.MoviesProviderHttp;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 
@@ -20,7 +21,10 @@ import java.io.IOException;
  * Created by danielgarciaperez on 02/05/2017.
  */
 
-public class MoviesMain extends AppCompatActivity {
+public class MoviesMain extends AppCompatActivity implements MovieLoaderListener{
+
+    private static final String LIFECYCLE_CURRENT_MOVIE_TEXT_KEY = "current-movie";
+    private static final String LIFECYCLE_CURRENT_ORDER_TEXT_KEY = "current-order";
 
     private RecyclerView recyclerView;
     private MoviesAdapter adapter;
@@ -29,9 +33,13 @@ public class MoviesMain extends AppCompatActivity {
 
     private MoviesProvider.Order order = MoviesProvider.Order.POPULAR;
 
+    private Gson gson;
+    private boolean moveToPosition = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.gson = new Gson();
         setContentView(R.layout.activity_movies_layout);
 
         recyclerView = (RecyclerView) findViewById(R.id.main_view);
@@ -41,21 +49,40 @@ public class MoviesMain extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        provider = new MoviesProviderHttp();
-
+        provider = new MoviesProviderHttp(this);
         adapter = new MoviesAdapter(provider, this);
-        provider.setAdapter(adapter);
         recyclerView.setAdapter(adapter);
 
-        loadMovies(order);
+        if (savedInstanceState != null &&
+                savedInstanceState.containsKey(LIFECYCLE_CURRENT_MOVIE_TEXT_KEY) &&
+                savedInstanceState.containsKey(LIFECYCLE_CURRENT_ORDER_TEXT_KEY)) {
+            int previousPosition = savedInstanceState.getInt(LIFECYCLE_CURRENT_MOVIE_TEXT_KEY);
+            this.order = MoviesProvider.Order.valueOf(savedInstanceState.getString(LIFECYCLE_CURRENT_ORDER_TEXT_KEY));
+            moveToPosition = true;
+            loadMovies(previousPosition, order);
+        }else
+        {
+            loadMovies(0, order);
+            moveToPosition = false;
+        }
+
+
     }
 
 
-    private void loadMovies(MoviesProvider.Order order) {
+    private void loadMovies(int position, MoviesProvider.Order order) {
         try {
-            provider.loadMovies(order);
+            provider.loadMovies(position, order);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void onMovieLoaded(int position){
+        adapter.notifyDataSetChanged();
+        if(moveToPosition) {
+            recyclerView.scrollToPosition(position);
+            moveToPosition = false;
         }
     }
 
@@ -71,28 +98,37 @@ public class MoviesMain extends AppCompatActivity {
         if (id == R.id.popular) {
             order = MoviesProvider.Order.POPULAR;
             getSupportActionBar().setTitle(R.string.app_name);
-            loadMovies(order);
+            moveToPosition = true;
+            loadMovies(0, order);
             return true;
         }
         if (id == R.id.rated) {
             order = MoviesProvider.Order.RATED;
             getSupportActionBar().setTitle(R.string.app_name_rated);
-            loadMovies(order);
+            moveToPosition = true;
+            loadMovies(0, order);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        View v = recyclerView.findChildViewUnder(0,0);
+        if(v != null) {
+            outState.putInt(LIFECYCLE_CURRENT_MOVIE_TEXT_KEY, Integer.valueOf(v.getTag().toString()).intValue());
+            outState.putString(LIFECYCLE_CURRENT_ORDER_TEXT_KEY, order.toString());
+        }
+    }
+
     public void movieClick(View v) {
         Intent movieDetailIntent = new Intent(MoviesMain.this, MovieDetail.class);
         int pos = (int) v.getTag();
         Movie selectedMovie = provider.getMovieAtPosition(pos);
-        movieDetailIntent.putExtra(MovieDetail.TITLE, selectedMovie.getTitle());
-        movieDetailIntent.putExtra(MovieDetail.DATE, selectedMovie.getReleaseDate());
-        movieDetailIntent.putExtra(MovieDetail.POSTER, selectedMovie.getPosterPath());
-        movieDetailIntent.putExtra(MovieDetail.VOTE, selectedMovie.getVoteAverage().toString());
-        movieDetailIntent.putExtra(MovieDetail.SYNOPSIS, selectedMovie.getOverview());
+        movieDetailIntent.putExtra(MovieDetail.MOVIE,gson.toJson(selectedMovie));
         startActivity(movieDetailIntent);
     }
 }
