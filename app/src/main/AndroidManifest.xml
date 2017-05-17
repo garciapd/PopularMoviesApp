@@ -21,6 +21,7 @@
         <activity
             android:name=".MovieDetail"
             android:label="@string/movie_detail"
+            android:alwaysRetainTaskState="true"
             android:parentActivityName=".MoviesMain">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

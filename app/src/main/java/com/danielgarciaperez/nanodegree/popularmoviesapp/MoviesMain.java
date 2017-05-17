@@ -12,6 +12,7 @@ import android.view.View;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.adapter.MoviesAdapter;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.model.Movie;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.provider.MoviesProvider;
+import com.danielgarciaperez.nanodegree.popularmoviesapp.provider.db.MoviesProviderDB;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.provider.http.MoviesProviderHttp;
 import com.google.gson.Gson;
 
@@ -35,6 +36,7 @@ public class MoviesMain extends AppCompatActivity implements MovieLoaderListener
 
     private Gson gson;
     private boolean moveToPosition = false;
+    private int lastPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,24 +51,33 @@ public class MoviesMain extends AppCompatActivity implements MovieLoaderListener
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        provider = new MoviesProviderHttp(this);
-        adapter = new MoviesAdapter(provider, this);
-        recyclerView.setAdapter(adapter);
-
         if (savedInstanceState != null &&
                 savedInstanceState.containsKey(LIFECYCLE_CURRENT_MOVIE_TEXT_KEY) &&
                 savedInstanceState.containsKey(LIFECYCLE_CURRENT_ORDER_TEXT_KEY)) {
             int previousPosition = savedInstanceState.getInt(LIFECYCLE_CURRENT_MOVIE_TEXT_KEY);
             this.order = MoviesProvider.Order.valueOf(savedInstanceState.getString(LIFECYCLE_CURRENT_ORDER_TEXT_KEY));
             moveToPosition = true;
+
+            initProviders(order);
             loadMovies(previousPosition, order);
         }else
         {
-            loadMovies(0, order);
+            initProviders(order);
+            loadMovies(this.lastPosition, order);
             moveToPosition = false;
         }
 
 
+    }
+
+    private void initProviders(MoviesProvider.Order order){
+        if(order == MoviesProvider.Order.FAVORITE){
+            provider = new MoviesProviderDB(getSupportLoaderManager(), this, this);
+        }else{
+            provider = new MoviesProviderHttp(this);
+        }
+        adapter = new MoviesAdapter(provider, this);
+        recyclerView.setAdapter(adapter);
     }
 
 
@@ -99,6 +110,7 @@ public class MoviesMain extends AppCompatActivity implements MovieLoaderListener
             order = MoviesProvider.Order.POPULAR;
             getSupportActionBar().setTitle(R.string.app_name);
             moveToPosition = true;
+            initProviders(order);
             loadMovies(0, order);
             return true;
         }
@@ -106,6 +118,15 @@ public class MoviesMain extends AppCompatActivity implements MovieLoaderListener
             order = MoviesProvider.Order.RATED;
             getSupportActionBar().setTitle(R.string.app_name_rated);
             moveToPosition = true;
+            initProviders(order);
+            loadMovies(0, order);
+            return true;
+        }
+        if (id == R.id.favorite) {
+            order = MoviesProvider.Order.FAVORITE;
+            getSupportActionBar().setTitle(R.string.app_name_favourite);
+            moveToPosition = true;
+            initProviders(order);
             loadMovies(0, order);
             return true;
         }
@@ -125,6 +146,10 @@ public class MoviesMain extends AppCompatActivity implements MovieLoaderListener
     }
 
     public void movieClick(View v) {
+        View view = recyclerView.findChildViewUnder(0,0);
+        if(view != null) {
+            this.lastPosition = Integer.valueOf(view.getTag().toString()).intValue();
+        }
         Intent movieDetailIntent = new Intent(MoviesMain.this, MovieDetail.class);
         int pos = (int) v.getTag();
         Movie selectedMovie = provider.getMovieAtPosition(pos);

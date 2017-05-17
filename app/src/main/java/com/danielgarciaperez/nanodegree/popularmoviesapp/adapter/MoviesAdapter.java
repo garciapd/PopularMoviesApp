@@ -59,7 +59,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
 
     @Override
     public int getItemCount() {
-        return this.provider.getNumMovies()/2;
+        int numMovies = this.provider.getNumMovies();
+        if(numMovies == 1) return numMovies;
+        return (numMovies / 2) + (numMovies%2);
     }
 
 

@@ -12,13 +12,13 @@ import java.io.IOException;
 public interface MoviesProvider {
 
     enum Order {
-        POPULAR, RATED
+        POPULAR, RATED, FAVORITE
     }
 
     Movie getMovieAtPosition(int position);
 
     int getNumMovies();
 
-    void loadMovies(int position, Order order) throws IOException;
+    void loadMovies(int initialPosition, Order order) throws IOException;
 
 }
