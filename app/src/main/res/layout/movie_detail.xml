@@ -17,6 +17,7 @@
             android:layout_height="80dp"
             android:layout_weight="0"
             android:background="@color/green"
+            android:elevation="4dp"
             android:paddingLeft="20dp"
             android:paddingTop="20dp"
             android:text="TextView"
@@ -76,6 +77,19 @@
             android:text="TextView"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/poster" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="85dp"
+            android:layout_height="52dp"
+            android:layout_marginLeft="-16dp"
+            android:layout_marginTop="8dp"
+            android:onClick="toogleFavorite"
+            android:text="@string/markFavorite"
+            android:textSize="12sp"
+            android:theme="@style/AppTheme"
+            app:layout_constraintLeft_toLeftOf="@+id/vote"
+            app:layout_constraintTop_toBottomOf="@+id/vote" />
 
 
     </android.support.constraint.ConstraintLayout>

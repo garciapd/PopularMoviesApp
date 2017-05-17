@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">Pop Movies</string>
     <string name="app_name_rated">Rated Movies</string>
-    <string name="app_name_favourite">Favourite Movies</string>
+    <string name="app_name_favourite">Favorite Movies</string>
     <string name="movie_detail">Movie Detail</string>
     <string name="rated">Rated</string>
     <string name="popular">Popular</string>
-    <string name="favourite">Favourite</string>
+    <string name="favourite">Favorite</string>
+    <string name="markFavorite">MARK AS FAVORITE</string>
+    <string name="markedFavorite">FAVORITE</string>
 </resources>
