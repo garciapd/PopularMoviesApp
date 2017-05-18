@@ -68,15 +68,17 @@ public class MovieDetail extends AppCompatActivity implements LoaderManager.Load
         movieDetailBinding = DataBindingUtil.setContentView(this, R.layout.movie_detail);
 
         Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-        movieJson = extras.getString(MOVIE);
-        Gson gson = new Gson();
-        movie = gson.fromJson(movieJson, Movie.class);
+        if(intent != null){
+            Bundle extras = intent.getExtras();
+            movieJson = extras.getString(MOVIE);
+            Gson gson = new Gson();
+            movie = gson.fromJson(movieJson, Movie.class);
 
-        isFavorite = false;
-        getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, MovieDetail.this);
+            isFavorite = false;
+            getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, MovieDetail.this);
 
-        fillView(movie);
+            fillView(movie);
+        }
     }
 
     private void fillView(Movie movie) {
@@ -164,9 +166,6 @@ public class MovieDetail extends AppCompatActivity implements LoaderManager.Load
 
                         ReviewAdapter adapter = new ReviewAdapter(MovieDetail.this,
                                 R.layout.review_item, reviewArrays);
-
-                        //movieDetailBinding.reviews.setAdapter(adapter);
-                        //setListViewHeight(movieDetailBinding.reviews);
                     }
                 }
             };
@@ -244,12 +243,14 @@ public class MovieDetail extends AppCompatActivity implements LoaderManager.Load
 
     public void clickTrailer(View view) {
         if(view.getTag() != null) {
-            Log.d("click", view.getTag().toString());
-            Intent videoClient = new Intent(Intent.ACTION_VIEW);
-            videoClient.setData(Uri.parse("http://m.youtube.com/watch?v="+view.getTag().toString()));
-            startActivityForResult(videoClient, 1234);
+            Intent youtube = new Intent(Intent.ACTION_VIEW, Uri.parse("http://m.youtube.com/watch?v="+view.getTag().toString()));
+            Intent chooser = Intent.createChooser(youtube , getResources().getString(R.string.chooser_title));
 
+            if (youtube.resolveActivity(getPackageManager()) != null) {
+                startActivity(chooser);
+            }
         }
+
     }
 
     public static void setListViewHeight(ListView listView) {

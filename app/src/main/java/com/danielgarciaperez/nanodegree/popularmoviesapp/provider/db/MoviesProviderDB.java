@@ -34,6 +34,8 @@ public class MoviesProviderDB implements MoviesProvider, LoaderManager.LoaderCal
 
     private Gson gson = new Gson();
 
+    private int previousPosition = 0;
+
     public MoviesProviderDB(LoaderManager loaderManager, Context context, MovieLoaderListener listener){
         this.listener = listener;
         this.loaderManager = loaderManager;
@@ -58,6 +60,7 @@ public class MoviesProviderDB implements MoviesProvider, LoaderManager.LoaderCal
 
     @Override
     public void loadMovies(int position, Order order) throws IOException {
+        this.previousPosition = position;
         this.loaderManager.initLoader(TASK_LOADER_ID, null, MoviesProviderDB.this);
     }
 
@@ -80,7 +83,7 @@ public class MoviesProviderDB implements MoviesProvider, LoaderManager.LoaderCal
     public void swapCursor(Cursor newCursor) {
         if (newCursor != null) {
             cursor = newCursor;
-            listener.onMovieLoaded(0);
+            listener.onMovieLoaded(this.previousPosition);
         }
     }
 

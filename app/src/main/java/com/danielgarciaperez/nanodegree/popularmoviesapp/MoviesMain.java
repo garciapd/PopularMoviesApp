@@ -66,7 +66,24 @@ public class MoviesMain extends AppCompatActivity implements MovieLoaderListener
             moveToPosition = false;
         }
 
+        setTitleForMenu(order);
+
         super.onCreate(savedInstanceState);
+    }
+
+    private void setTitleForMenu(MoviesProvider.Order order) {
+        switch (order){
+            case POPULAR:
+                getSupportActionBar().setTitle(R.string.app_name);
+                break;
+            case RATED:
+                getSupportActionBar().setTitle(R.string.app_name_rated);
+                break;
+            case FAVORITE:
+                getSupportActionBar().setTitle(R.string.app_name_favourite);
+                break;
+        }
+
     }
 
     private void initProviders(MoviesProvider.Order order){
@@ -107,24 +124,24 @@ public class MoviesMain extends AppCompatActivity implements MovieLoaderListener
         int id = item.getItemId();
         if (id == R.id.popular) {
             order = MoviesProvider.Order.POPULAR;
-            getSupportActionBar().setTitle(R.string.app_name);
             moveToPosition = true;
+            setTitleForMenu(order);
             initProviders(order);
             loadMovies(0, order);
             return true;
         }
         if (id == R.id.rated) {
             order = MoviesProvider.Order.RATED;
-            getSupportActionBar().setTitle(R.string.app_name_rated);
             moveToPosition = true;
+            setTitleForMenu(order);
             initProviders(order);
             loadMovies(0, order);
             return true;
         }
         if (id == R.id.favorite) {
             order = MoviesProvider.Order.FAVORITE;
-            getSupportActionBar().setTitle(R.string.app_name_favourite);
             moveToPosition = true;
+            setTitleForMenu(order);
             initProviders(order);
             loadMovies(0, order);
             return true;
