@@ -8,4 +8,5 @@
     <string name="favourite">Favorite</string>
     <string name="markFavorite">MARK AS FAVORITE</string>
     <string name="markedFavorite">FAVORITE</string>
+    <string name="poster">Poster</string>
 </resources>

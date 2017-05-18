@@ -13,6 +13,10 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.danielgarciaperez.nanodegree.popularmoviesapp.adapter.ReviewAdapter;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.adapter.TrailerAdapter;
@@ -115,6 +119,7 @@ public class MovieDetail extends AppCompatActivity implements LoaderManager.Load
                                 R.layout.trailer_item, trailersArray);
 
                         movieDetailBinding.trailers.setAdapter(adapter);
+                        setListViewHeight(movieDetailBinding.trailers);
                     }
                 }
             };
@@ -161,6 +166,7 @@ public class MovieDetail extends AppCompatActivity implements LoaderManager.Load
                                 R.layout.review_item, reviewArrays);
 
                         movieDetailBinding.reviews.setAdapter(adapter);
+                        setListViewHeight(movieDetailBinding.reviews);
                     }
                 }
             };
@@ -245,4 +251,24 @@ public class MovieDetail extends AppCompatActivity implements LoaderManager.Load
 
         }
     }
+
+    public static void setListViewHeight(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            return;
+        }
+        int desiredWidth = listView.getWidth();
+        int totalHeight = 0;
+        View view = null;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            view = listAdapter.getView(i, view, listView);
+            view.measure(desiredWidth , 0);
+            totalHeight += view.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+    }
+
 }
