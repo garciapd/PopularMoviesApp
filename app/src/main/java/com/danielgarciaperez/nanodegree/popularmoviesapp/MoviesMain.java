@@ -40,7 +40,6 @@ public class MoviesMain extends AppCompatActivity implements MovieLoaderListener
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         this.gson = new Gson();
         setContentView(R.layout.activity_movies_layout);
 
@@ -67,7 +66,7 @@ public class MoviesMain extends AppCompatActivity implements MovieLoaderListener
             moveToPosition = false;
         }
 
-
+        super.onCreate(savedInstanceState);
     }
 
     private void initProviders(MoviesProvider.Order order){

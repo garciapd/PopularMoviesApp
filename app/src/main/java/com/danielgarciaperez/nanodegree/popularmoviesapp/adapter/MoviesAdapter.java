@@ -75,7 +75,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
             super(view);
             imageView1 = (ImageView) view.findViewById(R.id.imageView1);
             imageView2 = (ImageView) view.findViewById(R.id.imageView2);
-            layout = (LinearLayout) view.findViewById(R.id.linearLayout);
+            layout = (LinearLayout) view.findViewById(R.id.linear);
         }
 
     }

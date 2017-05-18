@@ -168,6 +168,3 @@ class Movie {
     }
 
 }
-
-//http://api.themoviedb.org/3/movie/popular?api_key=27687a36c4e8e14a2b42f4c127d15825
-//http://api.themoviedb.org/3/movie/top_rated?api_key=27687a36c4e8e14a2b42f4c127d15825
