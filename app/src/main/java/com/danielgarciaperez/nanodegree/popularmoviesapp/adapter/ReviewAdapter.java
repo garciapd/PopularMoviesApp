@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.danielgarciaperez.nanodegree.popularmoviesapp.R;
@@ -27,29 +28,15 @@ public class ReviewAdapter extends ArrayAdapter<Review> {
         this.layoutResourceId = layoutResourceId;
         this.context = context;
         this.data = data;
-    }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View row = convertView;
-        ReviewHolder holder = null;
-
-        if (row == null) {
-            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-            row = inflater.inflate(layoutResourceId, parent, false);
-
-            holder = new ReviewHolder();
-            holder.content = (TextView) row.findViewById(R.id.content);
-
-            row.setTag(holder);
-        } else {
-            holder = (ReviewHolder) row.getTag();
+        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+        for(int i=0; i< data.length; i++){
+            View r = inflater.inflate(layoutResourceId, null, false);
+            TextView tv = (TextView) r.findViewById(R.id.content);
+            tv.setText(data[i].getContent());
+            LinearLayout l = (LinearLayout) ((Activity) context).findViewById(R.id.reviews);
+            l.addView(r);
         }
-
-        Review review = data[position];
-        holder.content.setText(review.getContent());
-
-        return row;
     }
 
     @Override
@@ -58,7 +45,4 @@ public class ReviewAdapter extends ArrayAdapter<Review> {
         return 0;
     }
 
-    static class ReviewHolder {
-        TextView content;
-    }
 }

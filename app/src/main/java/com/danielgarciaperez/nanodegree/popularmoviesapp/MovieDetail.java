@@ -165,8 +165,8 @@ public class MovieDetail extends AppCompatActivity implements LoaderManager.Load
                         ReviewAdapter adapter = new ReviewAdapter(MovieDetail.this,
                                 R.layout.review_item, reviewArrays);
 
-                        movieDetailBinding.reviews.setAdapter(adapter);
-                        setListViewHeight(movieDetailBinding.reviews);
+                        //movieDetailBinding.reviews.setAdapter(adapter);
+                        //setListViewHeight(movieDetailBinding.reviews);
                     }
                 }
             };
