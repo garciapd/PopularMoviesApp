@@ -2,6 +2,7 @@ package com.danielgarciaperez.nanodegree.popularmoviesapp.provider.http;
 
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.danielgarciaperez.nanodegree.popularmoviesapp.BuildConfig;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.MovieLoaderListener;
@@ -47,6 +48,7 @@ public class MoviesProviderHttp implements MoviesProvider, OnFetchListener{
 
     @Override
     public Movie getMovieAtPosition(int position) {
+        Log.d("position", String.valueOf(position));
         int pageNumber = 0;
         if(position >0 && elementsPerPage > 0){
             pageNumber = position / elementsPerPage;

@@ -15,7 +15,7 @@
         android:adjustViewBounds="true"
         android:onClick="movieClick"
         android:scaleType="fitXY"
-        app:srcCompat="@color/black" />
+        app:srcCompat="@android:color/white" />
 
     <ImageView
         android:id="@+id/imageView2"
@@ -25,6 +25,6 @@
         android:adjustViewBounds="true"
         android:onClick="movieClick"
         android:scaleType="fitXY"
-        app:srcCompat="@color/black" />
+        app:srcCompat="@android:color/white" />
 
 </LinearLayout>

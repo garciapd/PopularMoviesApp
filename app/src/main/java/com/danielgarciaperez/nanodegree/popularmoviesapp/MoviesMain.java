@@ -150,9 +150,13 @@ public class MoviesMain extends AppCompatActivity implements MovieLoaderListener
             this.lastPosition = Integer.valueOf(view.getTag().toString()).intValue();
         }
         Intent movieDetailIntent = new Intent(MoviesMain.this, MovieDetail.class);
-        int pos = (int) v.getTag();
-        Movie selectedMovie = provider.getMovieAtPosition(pos);
-        movieDetailIntent.putExtra(MovieDetail.MOVIE,gson.toJson(selectedMovie));
-        startActivity(movieDetailIntent);
+        if(v.getTag() != null){
+            int pos = (int) v.getTag();
+            Movie selectedMovie = provider.getMovieAtPosition(pos);
+            if(selectedMovie != null){
+                movieDetailIntent.putExtra(MovieDetail.MOVIE,gson.toJson(selectedMovie));
+                startActivity(movieDetailIntent);
+            }
+        }
     }
 }
