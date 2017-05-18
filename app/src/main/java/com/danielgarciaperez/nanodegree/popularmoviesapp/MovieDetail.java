@@ -13,14 +13,14 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.TextView;
 
+import com.danielgarciaperez.nanodegree.popularmoviesapp.adapter.ReviewAdapter;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.adapter.TrailerAdapter;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.data.MovieContract;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.databinding.MovieDetailBinding;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.model.Movie;
+import com.danielgarciaperez.nanodegree.popularmoviesapp.model.Review;
+import com.danielgarciaperez.nanodegree.popularmoviesapp.model.Reviews;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.model.Trailer;
 import com.danielgarciaperez.nanodegree.popularmoviesapp.model.Trailers;
 import com.google.gson.Gson;
@@ -46,7 +46,7 @@ public class MovieDetail extends AppCompatActivity implements LoaderManager.Load
     private final String API_KEY = BuildConfig.API_KEY;
 
     private final String URL_IMAGES = "http://image.tmdb.org/t/p/w185/";
-    private final String URL_VIDEOS = "http://api.themoviedb.org/3/movie/";
+    private final String URL_BASE = "http://api.themoviedb.org/3/movie/";
 
     private MovieDetailBinding movieDetailBinding;
 
@@ -128,7 +128,54 @@ public class MovieDetail extends AppCompatActivity implements LoaderManager.Load
                 Response response = client.newCall(request).execute();
                 return response.body().string();
             }
-        }.execute(URL_VIDEOS+movie.getId().toString()+"/videos?api_key="+API_KEY);
+        }.execute(URL_BASE +movie.getId().toString()+"/videos?api_key="+API_KEY);
+
+
+        new AsyncTask<String,Void,String>(){
+
+            @Override
+            protected String doInBackground(String... urls) {
+                String url = urls[0];
+                try {
+                    return run(url);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return "";
+            }
+
+            @Override
+            protected void onPostExecute(String result){
+                if(result != null && result.length() > 0) {
+                    Gson gson = new Gson();
+                    Reviews reviews = gson.fromJson(result, Reviews.class);
+
+                    if(reviews != null && reviews.getResults() != null && reviews.getResults().size() > 0){
+                        Review[] reviewArrays = new Review[reviews.getResults().size()];
+                        for (int i = 0; i < reviews.getResults().size(); i++) {
+                            reviewArrays[i] = reviews.getResults().get(i);
+                        }
+
+                        ReviewAdapter adapter = new ReviewAdapter(MovieDetail.this,
+                                R.layout.review_item, reviewArrays);
+
+                        movieDetailBinding.reviews.setAdapter(adapter);
+                    }
+                }
+            };
+
+            private String run(String url) throws IOException {
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder()
+                        .url(url)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                return response.body().string();
+            }
+        }.execute(URL_BASE +movie.getId().toString()+"/reviews?api_key="+API_KEY);
+
 
     }
 
